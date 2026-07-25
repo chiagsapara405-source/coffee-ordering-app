@@ -1,16 +1,75 @@
-# React + Vite
+# Caffeine ☕
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A neumorphic-styled coffee ordering web app built with React 19, Vite, Tailwind CSS v4, and GSAP 3.15.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Landing page** – Hero section with drink cards, scroll reveals, and parallax effects (GSAP)
+- **Auth system** – Login/signup with localStorage-based user persistence
+- **Menu browsing** – Category filters, search bar, dietary tags and filter chips
+- **Drink customization** – Size, milk, sugar level, espresso shots, syrup, temperature/ice with smart defaults per drink category
+- **Order flow** – Add to cart with fly animation, mobile drawer, desktop sidebar
+- **Cart management** – Quantity adjust, remove with undo toast, reorder last order
+- **Confetti** – Burst animation on order confirmation
+- **Dark mode** – CSS custom properties with `[data-theme="dark"]`
+- **Loyalty program** – Buy 9 drinks, get 10th free (stamp card)
+- **Favorites** – Heart-toggle per menu item
+- **Pickup time** – ASAP / 15 min / 30 min / 1 hour selector
+- **Accessibility** – Focus trap on modals, ARIA labels, keyboard navigation
+- **Responsive** – Mobile-first with adaptive cart (drawer on mobile, panel on desktop)
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Tool | Version |
+|---|---|
+| React | 19 |
+| Vite | 8 |
+| Tailwind CSS | 4 |
+| GSAP | 3.15 |
+| ESLint | 9 |
+| React Router | 7 |
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm install
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173).
+
+## Scripts
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Start dev server |
+| `npm run build` | Production build |
+| `npm run preview` | Preview production build |
+| `npm run lint` | Run ESLint |
+
+## Routes
+
+| Path | Page | Access |
+|---|---|---|
+| `/` | Landing page | Public |
+| `/login` | Login / Sign up | Public |
+| `/menu` | Ordering app | Requires login |
+
+## Project Structure
+
+```
+src/
+├── components/     # React components
+├── data/           # Menu data, auth helpers
+├── hooks/          # useLocalStorage, useFocusTrap
+├── pages/          # LandingPage, LoginPage
+├── App.jsx         # Main app (ordering)
+├── main.jsx        # Entry point with router
+└── index.css       # Global styles, CSS variables
+```
+
+## Design
+
+- **Colors**: Warm coffee tones (beige, brown, cream)
+- **Typography**: Playfair Display (serif), Space Grotesk (sans), Space Mono (mono)
+- **UI**: Neumorphic cards, soft shadows, pill-shaped buttons
