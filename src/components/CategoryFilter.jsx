@@ -14,9 +14,9 @@ export default function CategoryFilter({ activeCategory, onChange }) {
             onClick={() => onChange(cat.id)}
             role="tab"
             aria-selected={activeCategory === cat.id}
-            className={`cat-btn px-5 py-2.5 rounded-full whitespace-nowrap capitalize ${
-              activeCategory === cat.id ? "active" : ""
-            }`}
+            className={`cat-btn px-5 py-2.5 rounded-full whitespace-nowrap capitalize active:scale-95 transition-transform ${
+               activeCategory === cat.id ? "active" : ""
+             }`}
           >
             {cat.label}
           </button>

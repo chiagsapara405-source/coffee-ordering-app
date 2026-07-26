@@ -34,7 +34,7 @@ export default function MenuItem({ item, onCustomize, onQuickAdd, isFavorite, on
         <h3 className="font-display text-lg font-bold text-[#3a1d0d] truncate">
           {item.name}
         </h3>
-        <p className="font-mono-text text-xs text-[#603318]/80 mb-1 line-clamp-1">
+        <p className="font-mono-text text-xs text-secondary mb-1 line-clamp-1">
           {item.note}
         </p>
         {/* Dietary tags */}
@@ -45,7 +45,7 @@ export default function MenuItem({ item, onCustomize, onQuickAdd, isFavorite, on
               return df ? (
                 <span
                   key={d}
-                  className="inline-flex items-center gap-0.5 text-[10px] font-mono-text px-1.5 py-0.5 rounded-full bg-[#603318]/10 text-[#603318]"
+                  className="inline-flex items-center gap-0.5 text-[10px] font-mono-text px-1.5 py-0.5 rounded-full bg-[#603318]/10 text-secondary-soft"
                 >
                   {df.emoji} {df.label}
                 </span>
@@ -66,10 +66,10 @@ export default function MenuItem({ item, onCustomize, onQuickAdd, isFavorite, on
                   const card = e.currentTarget.closest(".item-card");
                   onQuickAdd(item, card ? card.getBoundingClientRect() : undefined);
                 }}
-                className="text-[10px] font-mono-text text-left transition-colors"
-                style={{ color: "var(--ink-soft)", opacity: 0.6 }}
-                onMouseEnter={(e) => e.target.style.opacity = "1"}
-                onMouseLeave={(e) => e.target.style.opacity = "0.6"}
+                className="text-[10px] font-mono-text text-left transition-all active:scale-90"
+                style={{ color: "var(--ink-soft)" }}
+                onMouseEnter={(e) => e.target.style.color = "var(--ink)"}
+                onMouseLeave={(e) => e.target.style.color = "var(--ink-soft)"}
                 aria-label={`Quick add ${item.name} with defaults`}
               >
                 + Quick add
@@ -84,7 +84,7 @@ export default function MenuItem({ item, onCustomize, onQuickAdd, isFavorite, on
                   e.stopPropagation();
                   onToggleFavorite(item.id);
                 }}
-                className="w-7 h-7 rounded-full flex items-center justify-center transition-transform hover:scale-110"
+                className="w-7 h-7 rounded-full flex items-center justify-center transition-transform hover:scale-110 active:scale-90"
                 aria-label={isFavorite ? `Remove ${item.name} from favorites` : `Add ${item.name} to favorites`}
                 style={{ color: isFavorite ? "#e74c3c" : "var(--ink-soft)" }}
               >
@@ -96,7 +96,7 @@ export default function MenuItem({ item, onCustomize, onQuickAdd, isFavorite, on
             <button
               onClick={() => onCustomize(item)}
               id="add"
-              className="neumorphic-sm rounded-full  w-9 h-9 flex items-center justify-center font-bold text-lg hover:scale-105 transition-transform flex-shrink-0"
+              className="neumorphic-sm rounded-full w-9 h-9 flex items-center justify-center font-bold text-lg hover:scale-105 active:scale-90 transition-transform flex-shrink-0"
               style={{ color: "var(--ink)" }}
               aria-label={`Customize ${item.name}`}
             >

@@ -88,7 +88,7 @@ export default function CartDrawer({
           </h2>
           <button
             onClick={onClose}
-            className="w-9 h-9 rounded-full neumorphic-sm flex items-center justify-center"
+            className="w-9 h-9 rounded-full neumorphic-sm flex items-center justify-center active:scale-90"
             aria-label="Close cart"
             style={{ color: "var(--ink)" }}
           >

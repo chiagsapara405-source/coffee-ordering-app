@@ -90,7 +90,7 @@ export default function CustomizeModal({
             <h3 className="font-display text-2xl font-bold text-[#3a1d0d]">
               {item.name}
             </h3>
-            <p className="font-mono-text text-[#603318]">
+            <p className="font-mono-text text-secondary-soft">
               {fmt(item.price)} base
             </p>
           </div>
@@ -288,7 +288,7 @@ export default function CustomizeModal({
 
         <button
           onClick={onAddToCart}
-          className="w-full py-4 rounded-full bg-[#3a1d0d] text-[#f1c7a9] font-display font-bold flex items-center justify-center gap-2 transition-colors hover:bg-[#603318]"
+          className="w-full py-4 rounded-full bg-[#3a1d0d] text-[#f1c7a9] font-display font-bold flex items-center justify-center gap-2 transition-all hover:bg-[#603318] active:scale-[0.97] active:bg-[#2a1208]"
         >
           Add to cup ·{" "}
           <span className="font-mono-text">{fmt(totalPrice)}</span>

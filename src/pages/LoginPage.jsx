@@ -1,6 +1,32 @@
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import gsap from "gsap";
 import { registerUser, loginUser, saveCurrentUser } from "../data/auth";
+
+function EyeIcon({ open }) {
+  return (
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      {open ? (
+        <>
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+          <circle cx="12" cy="12" r="3" />
+        </>
+      ) : (
+        <>
+          <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" />
+          <line x1="1" y1="1" x2="23" y2="23" />
+        </>
+      )}
+    </svg>
+  );
+}
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -8,7 +34,89 @@ export default function LoginPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+
+  const cardRef = useRef(null);
+  const formContentRef = useRef(null);
+  const emojiRef = useRef(null);
+  const headingRef = useRef(null);
+  const subtitleRef = useRef(null);
+  const submitBtnRef = useRef(null);
+  const isMounted = useRef(false);
+
+  // Entrance animation: card slides up on mount
+  useEffect(() => {
+    if (cardRef.current) {
+      gsap.set(cardRef.current, { opacity: 0, y: 30 });
+      gsap.to(cardRef.current, {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: "power3.out",
+        delay: 0.1,
+      });
+    }
+    isMounted.current = true;
+  }, []);
+
+  // Animate heading/emoji when mode changes (soft crossfade)
+  useEffect(() => {
+    if (!isMounted.current) return;
+    const targets = [];
+    if (emojiRef.current) targets.push(emojiRef.current);
+    if (headingRef.current) targets.push(headingRef.current);
+    if (subtitleRef.current) targets.push(subtitleRef.current);
+
+    if (targets.length > 0) {
+      gsap.from(targets, {
+        opacity: 0,
+        y: -6,
+        duration: 0.3,
+        stagger: 0.04,
+        ease: "power2.out",
+      });
+    }
+  }, [isSignup]);
+
+  // Smooth mode switch with GSAP
+  const switchMode = useCallback(() => {
+    if (!formContentRef.current) return;
+
+    gsap.to(formContentRef.current, {
+      opacity: 0,
+      y: -8,
+      duration: 0.15,
+      ease: "power2.in",
+      onComplete: () => {
+        const nextMode = !isSignup;
+        setIsSignup(nextMode);
+        setError("");
+        setShowPassword(false);
+
+        // Let React commit state changes first, then animate back in
+        requestAnimationFrame(() => {
+          gsap.to(formContentRef.current, {
+            opacity: 1,
+            y: 0,
+            duration: 0.35,
+            ease: "power3.out",
+            clearProps: "y",
+          });
+
+          // Animate the submit button text refresh
+          if (submitBtnRef.current) {
+            gsap.from(submitBtnRef.current, {
+              opacity: 0,
+              scale: 0.95,
+              duration: 0.25,
+              ease: "power2.out",
+            });
+          }
+        });
+      },
+    });
+  }, [isSignup]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -74,18 +182,21 @@ export default function LoginPage() {
         </div>
 
         {/* Auth card */}
-        <div className="neumorphic rounded-[2.5rem] p-8">
+        <div ref={cardRef} className="neumorphic rounded-[2.5rem] p-8">
+          {/* Emoji + Heading + Subtitle */}
           <div className="text-center mb-6">
-            <div className="text-5xl mb-3" aria-hidden="true">
+            <div ref={emojiRef} className="text-5xl mb-3" aria-hidden="true">
               {isSignup ? "☕" : "👋"}
             </div>
             <h2
+              ref={headingRef}
               className="font-display text-2xl font-bold"
               style={{ color: "var(--ink)" }}
             >
               {isSignup ? "Create your account" : "Welcome back"}
             </h2>
             <p
+              ref={subtitleRef}
               className="font-mono-text text-xs mt-1.5"
               style={{ color: "var(--ink-soft)" }}
             >
@@ -95,9 +206,20 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {isSignup && (
-              <div>
+          {/* Form content wrapper (animated via GSAP on mode switch) */}
+          <div ref={formContentRef}>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Name field — always rendered, hidden via CSS when not signup */}
+              <div
+                className="overflow-hidden transition-all duration-300 ease-out"
+                style={{
+                  maxHeight: isSignup ? "120px" : "0",
+                  opacity: isSignup ? 1 : 0,
+                  marginBottom: isSignup ? "1rem" : "0",
+                  pointerEvents: isSignup ? "auto" : "none",
+                }}
+                aria-hidden={!isSignup}
+              >
                 <label
                   htmlFor="login-name"
                   className="font-display font-semibold text-xs uppercase tracking-wider block mb-1.5"
@@ -110,84 +232,96 @@ export default function LoginPage() {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-5 py-3.5 rounded-full neumorphic-inset font-display text-sm outline-none"
+                  className="w-full px-5 py-3.5 rounded-full neumorphic-inset font-display text-sm"
                   style={{ color: "var(--ink)", backgroundColor: "var(--bg-color)" }}
                   placeholder="Your name"
                   autoComplete="name"
+                  tabIndex={isSignup ? 0 : -1}
                 />
               </div>
-            )}
 
-            <div>
-              <label
-                htmlFor="login-email"
-                className="font-display font-semibold text-xs uppercase tracking-wider block mb-1.5"
-                style={{ color: "var(--ink)" }}
+              <div>
+                <label
+                  htmlFor="login-email"
+                  className="font-display font-semibold text-xs uppercase tracking-wider block mb-1.5"
+                  style={{ color: "var(--ink)" }}
+                >
+                  Email
+                </label>
+                <input
+                  id="login-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-5 py-3.5 rounded-full neumorphic-inset font-display text-sm"
+                  style={{ color: "var(--ink)", backgroundColor: "var(--bg-color)" }}
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                  required
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="login-password"
+                  className="font-display font-semibold text-xs uppercase tracking-wider block mb-1.5"
+                  style={{ color: "var(--ink)" }}
+                >
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    id="login-password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-5 py-3.5 rounded-full neumorphic-inset font-display text-sm pr-12"
+                    style={{ color: "var(--ink)", backgroundColor: "var(--bg-color)" }}
+                    placeholder={
+                      isSignup ? "At least 4 characters" : "Your password"
+                    }
+                    autoComplete={isSignup ? "new-password" : "current-password"}
+                    required
+                    minLength={4}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((p) => !p)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center transition-opacity hover:opacity-70 active:scale-90"
+                    style={{ color: "var(--ink-soft)" }}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    tabIndex={-1}
+                  >
+                    <EyeIcon open={showPassword} />
+                  </button>
+                </div>
+              </div>
+
+              {error && (
+                <p
+                  className="font-mono-text text-xs text-center"
+                  style={{ color: "#e74c3c" }}
+                  role="alert"
+                >
+                  {error}
+                </p>
+              )}
+
+              <button
+                ref={submitBtnRef}
+                type="submit"
+                className="w-full py-4 rounded-full font-display font-bold text-sm transition-transform hover:scale-[1.02] active:scale-[0.98]"
+                style={{ backgroundColor: "var(--ink)", color: "var(--bg-color)" }}
               >
-                Email
-              </label>
-              <input
-                id="login-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-5 py-3.5 rounded-full neumorphic-inset font-display text-sm outline-none"
-                style={{ color: "var(--ink)", backgroundColor: "var(--bg-color)" }}
-                placeholder="you@example.com"
-                autoComplete="email"
-                required
-              />
-            </div>
+                {isSignup ? "Create account" : "Log in"}
+              </button>
+            </form>
+          </div>
 
-            <div>
-              <label
-                htmlFor="login-password"
-                className="font-display font-semibold text-xs uppercase tracking-wider block mb-1.5"
-                style={{ color: "var(--ink)" }}
-              >
-                Password
-              </label>
-              <input
-                id="login-password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-5 py-3.5 rounded-full neumorphic-inset font-display text-sm outline-none"
-                style={{ color: "var(--ink)", backgroundColor: "var(--bg-color)" }}
-                placeholder={
-                  isSignup ? "At least 4 characters" : "Your password"
-                }
-                autoComplete={isSignup ? "new-password" : "current-password"}
-                required
-                minLength={4}
-              />
-            </div>
-
-            {error && (
-              <p
-                className="font-mono-text text-xs text-center"
-                style={{ color: "#e74c3c" }}
-                role="alert"
-              >
-                {error}
-              </p>
-            )}
-
-            <button
-              type="submit"
-              className="w-full py-4 rounded-full font-display font-bold text-sm transition-transform hover:scale-[1.02] active:scale-[0.98]"
-              style={{ backgroundColor: "var(--ink)", color: "var(--bg-color)" }}
-            >
-              {isSignup ? "Create account" : "Log in"}
-            </button>
-          </form>
-
+          {/* Mode toggle */}
           <div className="mt-6 text-center">
             <button
-              onClick={() => {
-                setIsSignup(!isSignup);
-                setError("");
-              }}
+              onClick={switchMode}
               className="font-mono-text text-xs underline underline-offset-2 transition-opacity hover:opacity-70"
               style={{ color: "var(--ink-soft)" }}
             >

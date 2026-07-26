@@ -1,6 +1,10 @@
 export const USERS_KEY = "caffeine-users";
 export const CURRENT_USER_KEY = "caffeine-current-user";
 
+const ADMIN_EMAIL = "admin@caffeine.com";
+const ADMIN_PASSWORD = "admin123";
+const ADMIN_NAME = "Admin";
+
 function getUsers() {
   try {
     const data = localStorage.getItem(USERS_KEY);
@@ -28,6 +32,27 @@ function hashPassword(password) {
   return "h" + Math.abs(hash).toString(16);
 }
 
+// Seed default admin account on module load
+(function seedAdmin() {
+  try {
+    const users = getUsers();
+    const exists = users.find((u) => u.email === ADMIN_EMAIL);
+    if (!exists) {
+      users.push({
+        id: "u-admin",
+        name: ADMIN_NAME,
+        email: ADMIN_EMAIL,
+        password: hashPassword(ADMIN_PASSWORD),
+        role: "admin",
+        createdAt: new Date().toISOString(),
+      });
+      saveUsers(users);
+    }
+  } catch {
+    // Silently fail; non-critical
+  }
+})();
+
 export function registerUser(name, email, password) {
   const users = getUsers();
   if (users.find((u) => u.email === email)) {
@@ -41,6 +66,7 @@ export function registerUser(name, email, password) {
     name,
     email,
     password: hashPassword(password),
+    role: "customer",
     createdAt: new Date().toISOString(),
   };
   users.push(newUser);
@@ -55,7 +81,6 @@ export function loginUser(email, password) {
   if (!found) {
     return { success: false, error: "Invalid email or password" };
   }
-  // Return user without password
   const safeUser = { ...found };
   delete safeUser.password;
   return { success: true, user: safeUser };
@@ -84,4 +109,9 @@ export function getCurrentUser() {
 
 export function logoutUser() {
   saveCurrentUser(null);
+}
+
+export function isAdminUser() {
+  const user = getCurrentUser();
+  return user?.role === "admin";
 }

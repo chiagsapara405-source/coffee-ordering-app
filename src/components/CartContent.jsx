@@ -29,7 +29,7 @@ export default function CartContent({
       <h2 className="font-display text-2xl font-bold text-[#3a1d0d] mb-1">
         Your order
       </h2>
-      <p className="font-mono-text text-xs text-[#603318] mb-4">
+      <p className="font-mono-text text-xs text-secondary-soft mb-4">
         Ticket #{ticketNo} · Est. wait 5 mins
       </p>
 
@@ -52,17 +52,17 @@ export default function CartContent({
             🫗
           </div>
           <div>
-            <p className="font-display font-semibold text-sm text-[#603318]">
+            <p className="font-display font-semibold text-sm text-secondary-soft">
               Your cup is empty
             </p>
-            <p className="font-mono-text text-xs text-[#603318]/60 mt-1">
+            <p className="font-mono-text text-xs text-secondary-muted mt-1">
               {emptyMessage}
             </p>
           </div>
           {hasLastOrder && onReorder && (
             <button
               onClick={onReorder}
-              className="inline-block neumorphic-sm px-5 py-2.5 rounded-full font-display font-semibold text-sm text-[#3a1d0d] hover:scale-[1.02] transition-transform"
+              className="inline-block neumorphic-sm px-5 py-2.5 rounded-full font-display font-semibold text-sm text-[#3a1d0d] hover:scale-[1.02] active:scale-95 transition-transform"
             >
               ↩ Reorder last order
             </button>
@@ -83,7 +83,7 @@ export default function CartContent({
                 onClick={() => onPickupTimeChange(t.id)}
                 role="radio"
                 aria-checked={pickupTime === t.id}
-                className="flex-1 py-2 rounded-full font-mono-text text-xs font-semibold transition-colors"
+                className="flex-1 py-2 rounded-full font-mono-text text-xs font-semibold transition-all active:scale-95"
                 style={{
                   backgroundColor: pickupTime === t.id ? "var(--ink)" : "transparent",
                   color: pickupTime === t.id ? "var(--bg-color)" : "var(--ink-soft)",
@@ -107,7 +107,7 @@ export default function CartContent({
           <span>Subtotal</span>
           <span>{fmt(subtotal)}</span>
         </div>
-        <div className="flex justify-between font-mono-text text-sm text-[#603318]">
+        <div className="flex justify-between font-mono-text text-sm text-secondary-soft">
           <span>Tax (5%)</span>
           <span>{fmt(tax)}</span>
         </div>
@@ -119,7 +119,7 @@ export default function CartContent({
       <button
         onClick={onPlaceOrder}
         disabled={cart.length === 0}
-        className="mt-5 w-full py-4 rounded-full bg-[#3a1d0d] text-[#f1c7a9] font-display font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#603318] transition-colors"
+        className="mt-5 w-full py-4 rounded-full bg-[#3a1d0d] text-[#f1c7a9] font-display font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#603318] active:scale-[0.97] active:bg-[#2a1208] transition-all"
         aria-label={cart.length === 0 ? "Cart is empty" : "Place order"}
       >
         Place order

@@ -34,7 +34,7 @@ export default function LoyaltyCard({ orderCount }) {
           </span>
         ))}
       </div>
-      <p className="font-mono-text text-[10px]" style={{ color: "var(--ink-soft)" }}>
+      <p className="font-mono-text text-[10px] text-secondary-muted">
         {isComplete
           ? "Your next drink is on us!"
           : (() => {

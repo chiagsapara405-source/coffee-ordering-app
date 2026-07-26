@@ -510,7 +510,7 @@ export default function App() {
         {/* Menu Grid */}
         <div
           ref={menuGridRef}
-          className="grid grid-cols-1 sm:grid-cols-2 gap-6"
+          className="menu-grid grid grid-cols-1 sm:grid-cols-2 gap-6"
           role="list"
           aria-label="Coffee menu"
         >
@@ -531,14 +531,14 @@ export default function App() {
               <div className="text-5xl opacity-30" aria-hidden="true">
                 {searchQuery ? "🔍" : dietFilter ? "🥗" : "☕"}
               </div>
-              <p className="font-display font-semibold text-sm text-[#603318]">
+              <p className="font-display font-semibold text-sm text-secondary-soft">
                 {searchQuery
                   ? `No results for "${searchQuery}"`
                   : dietFilter
                     ? `No ${dietFilter.replace("-", " ")} options here`
                     : "Nothing here yet"}
               </p>
-              <p className="font-mono-text text-xs text-[#603318]/60">
+              <p className="font-mono-text text-xs text-secondary-muted">
                 {searchQuery
                   ? "Try a different search term"
                   : dietFilter

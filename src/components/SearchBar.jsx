@@ -11,7 +11,7 @@ export default function SearchBar({
       {/* Search input */}
       <div className="relative max-w-md mx-auto">
         <svg
-          className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#603318]/50"
+          className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary-muted"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
@@ -36,7 +36,7 @@ export default function SearchBar({
         {query && (
           <button
             onClick={() => onQueryChange("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center text-[#603318]/50 hover:text-[#3a1d0d]"
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center text-secondary-muted hover:text-[#3a1d0d] active:scale-75"
             aria-label="Clear search"
           >
             ✕

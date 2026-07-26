@@ -15,7 +15,7 @@ export default function CartPanel({
   onPickupTimeChange,
 }) {
   return (
-    <aside className="hidden lg:block sticky top-32">
+    <aside className="hidden lg:block sticky top-24">
       <div className="neumorphic rounded-[2rem] p-6 flex flex-col max-h-[calc(100vh-9rem)]">
         <CartContent
           cart={cart}

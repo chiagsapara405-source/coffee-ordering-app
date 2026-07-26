@@ -32,13 +32,13 @@ export default function CartRow({ item, onChangeQty }) {
         <p className="font-display font-semibold text-sm text-[#3a1d0d] truncate">
           {item.name}
         </p>
-        <p className="font-mono-text text-[11px] text-[#603318]/80 truncate">
+        <p className="font-mono-text text-[11px] text-secondary truncate">
           {parts.join(" · ")}
         </p>
         <div className="flex items-center gap-3 mt-1">
           <button
             onClick={() => onChangeQty(item.key, -1)}
-            className="qty-btn font-display font-bold text-[#3a1d0d]"
+            className="qty-btn font-display font-bold text-[#3a1d0d] active:text-[#603318]"
             aria-label={`Decrease quantity of ${item.name}`}
           >
             −
@@ -52,7 +52,7 @@ export default function CartRow({ item, onChangeQty }) {
           </span>
           <button
             onClick={() => onChangeQty(item.key, 1)}
-            className="qty-btn font-display font-bold text-[#3a1d0d]"
+            className="qty-btn font-display font-bold text-[#3a1d0d] active:text-[#603318]"
             aria-label={`Increase quantity of ${item.name}`}
           >
             +

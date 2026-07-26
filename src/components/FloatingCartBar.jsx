@@ -12,7 +12,7 @@ export default function FloatingCartBar({ count, total, onClick }) {
       </div>
       <button
         onClick={onClick}
-        className="font-display font-bold text-sm bg-[#3a1d0d] text-[#f1c7a9] px-5 py-2.5 rounded-full"
+        className="font-display font-bold text-sm bg-[#3a1d0d] text-[#f1c7a9] px-5 py-2.5 rounded-full active:scale-95 active:bg-[#2a1208] transition-all"
         aria-label={`View cart with ${count} item${count !== 1 ? "s" : ""}`}
       >
         View cart
