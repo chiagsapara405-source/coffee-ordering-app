@@ -52,10 +52,10 @@ export default function SearchBar({
       >
         <button
           onClick={() => onDietFilterChange(null)}
-          className={`px-3 py-1.5 rounded-full font-mono-text text-xs font-semibold transition-colors ${
+          className={`px-3 py-1.5 rounded-full font-mono-text text-xs font-semibold transition-all ${
             dietFilter === null
-              ? "bg-[#3a1d0d] text-[#f1c7a9]"
-              : "neumorphic-sm text-[#3a1d0d]"
+              ? "btn-primary"
+              : "btn-outline"
           }`}
         >
           All
@@ -66,10 +66,10 @@ export default function SearchBar({
             onClick={() =>
               onDietFilterChange(dietFilter === df.id ? null : df.id)
             }
-            className={`px-3 py-1.5 rounded-full font-mono-text text-xs font-semibold transition-colors flex items-center gap-1 ${
+            className={`px-3 py-1.5 rounded-full font-mono-text text-xs font-semibold transition-all flex items-center gap-1 ${
               dietFilter === df.id
-                ? "bg-[#3a1d0d] text-[#f1c7a9]"
-                : "neumorphic-sm text-[#3a1d0d]"
+                ? "btn-primary"
+                : "btn-outline"
             }`}
           >
             {df.emoji} {df.label}

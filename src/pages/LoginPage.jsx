@@ -118,30 +118,44 @@ export default function LoginPage() {
     });
   }, [isSignup]);
 
-  const handleSubmit = (e) => {
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
-    if (isSignup) {
-      if (!name.trim()) {
-        setError("Name is required");
-        return;
-      }
-      const result = registerUser(name.trim(), email.trim(), password);
-      if (result.success) {
-        saveCurrentUser(result.user);
-        navigate("/menu", { replace: true });
+    try {
+      if (isSignup) {
+        if (!name.trim()) {
+          setError("Name is required");
+          setLoading(false);
+          return;
+        }
+        const result = await registerUser(name.trim(), email.trim(), password);
+        if (result.success) {
+          saveCurrentUser(result.user);
+          navigate("/menu", { replace: true });
+        } else {
+          setError(result.error || "Registration failed");
+        }
       } else {
-        setError(result.error);
+        const result = await loginUser(email.trim(), password);
+        if (result.success) {
+          saveCurrentUser(result.user);
+          if (result.user?.role === "admin") {
+            navigate("/admin", { replace: true });
+          } else {
+            navigate("/menu", { replace: true });
+          }
+        } else {
+          setError(result.error || "Login failed");
+        }
       }
-    } else {
-      const result = loginUser(email.trim(), password);
-      if (result.success) {
-        saveCurrentUser(result.user);
-        navigate("/menu", { replace: true });
-      } else {
-        setError(result.error);
-      }
+    } catch (err) {
+      setError(err.message || "An unexpected error occurred");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -306,14 +320,17 @@ export default function LoginPage() {
                   {error}
                 </p>
               )}
-
               <button
                 ref={submitBtnRef}
                 type="submit"
-                className="w-full py-4 rounded-full font-display font-bold text-sm transition-transform hover:scale-[1.02] active:scale-[0.98]"
-                style={{ backgroundColor: "var(--ink)", color: "var(--bg-color)" }}
+                disabled={loading}
+                className="w-full py-4 rounded-full font-display font-semibold text-sm transition-transform active:scale-[0.98] mt-2 neumorphic hover:brightness-105 disabled:opacity-50"
+                style={{
+                  backgroundColor: "var(--accent)",
+                  color: "var(--accent-text)",
+                }}
               >
-                {isSignup ? "Create account" : "Log in"}
+                {loading ? "Please wait..." : isSignup ? "Create Account" : "Sign In"}
               </button>
             </form>
           </div>

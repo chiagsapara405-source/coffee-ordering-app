@@ -23,6 +23,8 @@ export default function CartContent({
   pickupTime = "asap",
   onPickupTimeChange,
   emptyMessage = "Your cup is empty. Add something from the menu.",
+  taxRate = 5,
+  isPlacing = false,
 }) {
   return (
     <>
@@ -62,7 +64,7 @@ export default function CartContent({
           {hasLastOrder && onReorder && (
             <button
               onClick={onReorder}
-              className="inline-block neumorphic-sm px-5 py-2.5 rounded-full font-display font-semibold text-sm text-[#3a1d0d] hover:scale-[1.02] active:scale-95 transition-transform"
+              className="inline-block btn-outline px-5 py-2.5 rounded-full font-display font-semibold text-sm"
             >
               ↩ Reorder last order
             </button>
@@ -108,7 +110,7 @@ export default function CartContent({
           <span>{fmt(subtotal)}</span>
         </div>
         <div className="flex justify-between font-mono-text text-sm text-secondary-soft">
-          <span>Tax (5%)</span>
+          <span>Tax ({taxRate}%)</span>
           <span>{fmt(tax)}</span>
         </div>
         <div className="flex justify-between font-display font-bold text-lg text-[#3a1d0d] pt-1">
@@ -118,11 +120,11 @@ export default function CartContent({
       </div>
       <button
         onClick={onPlaceOrder}
-        disabled={cart.length === 0}
+        disabled={cart.length === 0 || isPlacing}
         className="mt-5 w-full py-4 rounded-full bg-[#3a1d0d] text-[#f1c7a9] font-display font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#603318] active:scale-[0.97] active:bg-[#2a1208] transition-all"
-        aria-label={cart.length === 0 ? "Cart is empty" : "Place order"}
+        aria-label={cart.length === 0 ? "Cart is empty" : isPlacing ? "Placing order" : "Place order"}
       >
-        Place order
+        {isPlacing ? "Placing order…" : "Place order"}
       </button>
     </>
   );

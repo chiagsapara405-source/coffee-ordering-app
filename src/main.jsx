@@ -24,7 +24,7 @@ createRoot(document.getElementById("root")).render(
         <Route
           path="/admin"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRole="admin">
               <AdminPage />
             </ProtectedRoute>
           }

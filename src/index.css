@@ -33,15 +33,17 @@
   --dash-color: rgba(241,199,169,0.25);
 }
 
-/* Smooth theme transitions */
+/* Smooth theme transitions — scoped to cheap properties only.
+   box-shadow is deliberately NOT transitioned here: neumorphic shadows use
+   large blur radii, so animating them on every element makes interactions
+   (typing, focus) block the main thread and blow up INP. */
 *, *::before, *::after {
-  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 body {
   background-color: var(--bg-color);
   background-image: radial-gradient(circle at top right, var(--bg-gradient-start), var(--bg-gradient-end));
-  background-attachment: fixed;
   overflow-x: hidden;
   color: var(--text-color);
 }
@@ -57,7 +59,9 @@ body {
 .neumorphic-inset {
   background-color: var(--bg-color);
   box-shadow: inset 6px 6px 14px var(--shadow-dark), inset -6px -6px 14px var(--shadow-light);
-  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+  /* Animate only border-color on focus — animating box-shadow (large blur) here
+     delayed the first keystroke by ~250ms (INP regression on the login form). */
+  transition: border-color 0.25s ease;
   border: 2px solid transparent;
 }
 .neumorphic-inset:focus-within {
@@ -67,6 +71,63 @@ body {
 .neumorphic-sm {
   background-color: var(--bg-color);
   box-shadow: 6px 6px 16px var(--shadow-dark), -6px -6px 16px var(--shadow-light);
+}
+
+/* --- Solid / outlined action buttons ---
+   Interactive controls deliberately do NOT use neumorphic shadows so click
+   targets stand apart from the surfaces behind them. */
+.btn-primary {
+  background-color: var(--ink);
+  color: var(--bg-color);
+  border: 2px solid var(--ink);
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.15s ease;
+}
+.btn-primary:hover {
+  background-color: var(--ink-soft);
+  border-color: var(--ink-soft);
+}
+.btn-primary:active {
+  transform: scale(0.97);
+}
+.btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.15s ease;
+}
+.btn-outline:hover {
+  background-color: var(--ink);
+  color: var(--bg-color);
+}
+.btn-outline:active {
+  transform: scale(0.97);
+}
+
+/* --- Selectable option pills (size/milk/sugar/syrup/etc.) ---
+   Filled when active, outlined otherwise — never neumorphic, so the
+   selected state is unmistakable. */
+.option-btn {
+  background-color: transparent;
+  color: var(--ink);
+  border: 2px solid var(--ink-soft);
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+.option-btn:hover {
+  border-color: var(--ink);
+}
+.option-btn:active {
+  transform: scale(0.95);
+}
+.option-btn.active {
+  background-color: var(--ink);
+  color: var(--bg-color);
+  border-color: var(--ink);
 }
 
 ::-webkit-scrollbar { width: 8px; }
@@ -89,11 +150,6 @@ body {
 @keyframes pillPop {
   0% { transform: scale(0.8); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
-}
-
-.size-btn.active, .milk-btn.active {
-  background: var(--ink);
-  color: var(--bg-color);
 }
 
 .ticket-edge {
@@ -157,15 +213,11 @@ body {
 @keyframes cupBounce { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-10px) rotate(2deg); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .cup-bounce { animation: none; }
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+  }
   .item-card:hover { transform: none; }
 }
 
-#add:hover {
-  background: var(--ink);
-  color: var(--bg-color);
-}
-#add:active {
-  background: var(--ink-soft);
-  color: var(--bg-color);
-}
+/* The "add to cup" button uses .btn-primary — no separate #add rules needed */

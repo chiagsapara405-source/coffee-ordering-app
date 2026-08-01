@@ -93,30 +93,40 @@ export default function AuthModal({ isOpen, mode, onLogin, onClose }) {
     });
   }, [isSignup]);
 
-  const handleSubmit = (e) => {
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
-    if (isSignup) {
-      if (!name.trim()) {
-        setError("Name is required");
-        return;
-      }
-      const result = registerUser(name.trim(), email.trim(), password);
-      if (result.success) {
-        onLogin(result.user);
-        onClose();
+    try {
+      if (isSignup) {
+        if (!name.trim()) {
+          setError("Name is required");
+          setLoading(false);
+          return;
+        }
+        const result = await registerUser(name.trim(), email.trim(), password);
+        if (result.success) {
+          onLogin(result.user);
+          onClose();
+        } else {
+          setError(result.error || "Registration failed");
+        }
       } else {
-        setError(result.error);
+        const result = await loginUser(email.trim(), password);
+        if (result.success) {
+          onLogin(result.user);
+          onClose();
+        } else {
+          setError(result.error || "Login failed");
+        }
       }
-    } else {
-      const result = loginUser(email.trim(), password);
-      if (result.success) {
-        onLogin(result.user);
-        onClose();
-      } else {
-        setError(result.error);
-      }
+    } catch (err) {
+      setError(err.message || "An unexpected error occurred");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -279,10 +289,11 @@ export default function AuthModal({ isOpen, mode, onLogin, onClose }) {
 
             <button
               type="submit"
-              className="w-full py-3.5 rounded-full font-display font-bold text-sm transition-all hover:bg-[#603318] active:scale-[0.97]"
+              disabled={loading}
+              className="w-full py-3.5 rounded-full font-display font-bold text-sm transition-all hover:bg-[#603318] active:scale-[0.97] disabled:opacity-50"
               style={{ backgroundColor: "var(--ink)", color: "var(--bg-color)" }}
             >
-              {isSignup ? "Create account" : "Log in"}
+              {loading ? "Please wait…" : isSignup ? "Create account" : "Log in"}
             </button>
           </form>
         </div>

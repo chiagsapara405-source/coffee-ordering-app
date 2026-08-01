@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import { Link } from "react-router-dom";
 
 const Navbar = forwardRef(function Navbar(
-  { count, onCartClick, theme, onThemeToggle, user, onLogout },
+  { count, onCartClick, theme, onThemeToggle, user, onLogout, onHistoryClick },
   ref,
 ) {
   return (
@@ -52,18 +52,35 @@ const Navbar = forwardRef(function Navbar(
             {user?.name}
           </span>
 
-          {/* Admin Dashboard Link */}
-          <Link
-            to="/admin"
-            className="w-9 h-9 rounded-full neumorphic-sm flex items-center justify-center hover:scale-105 active:scale-90 transition-all"
-            aria-label="Admin dashboard"
-            title="Admin dashboard"
-            style={{ color: "var(--ink-soft)" }}
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-          </Link>
+          {/* Order history */}
+          {onHistoryClick && (
+            <button
+              onClick={onHistoryClick}
+              className="w-9 h-9 rounded-full neumorphic-sm flex items-center justify-center hover:scale-105 active:scale-90 transition-all"
+              aria-label="Order history"
+              title="Order history"
+              style={{ color: "var(--ink-soft)" }}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
+          )}
+
+          {/* Admin Dashboard Link (admins only) */}
+          {user?.role === "admin" && (
+            <Link
+              to="/admin"
+              className="w-9 h-9 rounded-full neumorphic-sm flex items-center justify-center hover:scale-105 active:scale-90 transition-all"
+              aria-label="Admin dashboard"
+              title="Admin dashboard"
+              style={{ color: "var(--ink-soft)" }}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </Link>
+          )}
 
           <button
             onClick={onLogout}
