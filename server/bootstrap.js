@@ -16,6 +16,11 @@ export function bootstrapApp() {
       await connectDB();
       await seedDB();
     })();
+    // If bootstrap fails (e.g. transient DB blip on a cold start), allow the
+    // next request to retry instead of caching a rejected promise forever.
+    bootPromise.catch(() => {
+      bootPromise = null;
+    });
   }
   return bootPromise;
 }

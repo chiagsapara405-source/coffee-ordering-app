@@ -21,10 +21,20 @@ const initialMenu = [
 
 export const seedDB = async () => {
   try {
-    const menuCount = await MenuItem.countDocuments();
-    if (menuCount === 0) {
-      await MenuItem.insertMany(initialMenu);
-      console.log("Database seeded with initial menu items.");
+    // Idempotent + concurrency-safe: upsert by itemId so overlapping cold starts
+    // (e.g. first Vercel deploy) never insert duplicates or fail a seed run.
+    // $setOnInsert preserves admin edits — existing menu docs are never touched.
+    const result = await MenuItem.bulkWrite(
+      initialMenu.map((item) => ({
+        updateOne: {
+          filter: { itemId: item.itemId },
+          update: { $setOnInsert: item },
+          upsert: true,
+        },
+      }))
+    );
+    if (result.upsertedCount > 0) {
+      console.log(`Menu seed: inserted ${result.upsertedCount} missing items.`);
     }
 
     // Seed admin user from environment only (no hardcoded credentials in source)
