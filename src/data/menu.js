@@ -179,3 +179,57 @@ export const LOYALTY_KEY = "caffeine-loyalty";
 export const FAVORITES_KEY = "caffeine-favorites";
 
 export const fmt = (n) => "₹" + Math.round(n);
+
+import { api } from "../api/client.js";
+
+/** Normalize a server menu item into the frontend shape (id = itemId || _id) */
+export function normalizeMenuItem(item) {
+  return {
+    ...item,
+    id: item.itemId || item._id,
+  };
+}
+
+export async function fetchMenuItems() {
+  try {
+    const items = await api.get("/api/menu");
+    return items.map(normalizeMenuItem);
+  } catch (err) {
+    console.warn("Falling back to local menu static data:", err);
+    return MENU;
+  }
+}
+
+export async function fetchAllMenuItems() {
+  const items = await api.get("/api/menu/all");
+  return items.map(normalizeMenuItem);
+}
+
+export async function createMenuItem(data) {
+  const item = await api.post("/api/menu", data);
+  return normalizeMenuItem(item);
+}
+
+export async function updateMenuItem(id, data) {
+  const item = await api.put(`/api/menu/${id}`, data);
+  return normalizeMenuItem(item);
+}
+
+export async function deleteMenuItem(id) {
+  return api.delete(`/api/menu/${id}`);
+}
+
+export async function createOrder(orderData) {
+  try {
+    return await api.post("/api/orders", orderData);
+  } catch (err) {
+    console.error("Order creation failed:", err);
+    throw err;
+  }
+}
+
+export async function fetchMyOrders() {
+  const data = await api.get("/api/orders/my?limit=20");
+  return data.orders || [];
+}
+

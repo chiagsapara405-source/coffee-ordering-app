@@ -17,6 +17,8 @@ export default function CartDrawer({
   pickupTime,
   onPickupTimeChange,
   onClose,
+  taxRate,
+  isPlacing,
 }) {
   const drawerRef = useRef(null);
   const overlayRef = useRef(null);
@@ -110,6 +112,8 @@ export default function CartDrawer({
             orderCount={orderCount}
             pickupTime={pickupTime}
             onPickupTimeChange={onPickupTimeChange}
+            taxRate={taxRate}
+            isPlacing={isPlacing}
           />
         </div>
       </div>

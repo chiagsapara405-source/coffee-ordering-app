@@ -5,8 +5,15 @@ export default function MenuItem({ item, onCustomize, onQuickAdd, isFavorite, on
   const [imgLoaded, setImgLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
 
+  const isUnavailable = item.available === false;
+
   return (
-    <div className="menu-item item-card neumorphic rounded-[2rem] p-5 flex gap-4 items-center">
+    <div
+      className={`menu-item item-card neumorphic rounded-[2rem] p-5 flex gap-4 items-center ${
+        isUnavailable ? "opacity-70 grayscale" : ""
+      }`}
+      aria-disabled={isUnavailable}
+    >
       <div className="relative w-24 h-24 rounded-2xl flex-shrink-0 overflow-hidden shadow-md">
         {/* Skeleton loader */}
         {!imgLoaded && !imgError && (
@@ -31,9 +38,19 @@ export default function MenuItem({ item, onCustomize, onQuickAdd, isFavorite, on
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <h3 className="font-display text-lg font-bold text-[#3a1d0d] truncate">
-          {item.name}
-        </h3>
+        <div className="flex items-center gap-2">
+          <h3 className="font-display text-lg font-bold text-[#3a1d0d] truncate">
+            {item.name}
+          </h3>
+          {isUnavailable && (
+            <span
+              className="flex-shrink-0 font-mono-text text-[9px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wide"
+              style={{ backgroundColor: "rgba(231,76,60,0.12)", color: "#e74c3c" }}
+            >
+              Unavailable
+            </span>
+          )}
+        </div>
         <p className="font-mono-text text-xs text-secondary mb-1 line-clamp-1">
           {item.note}
         </p>
@@ -58,7 +75,7 @@ export default function MenuItem({ item, onCustomize, onQuickAdd, isFavorite, on
             <span className="font-mono-text text-sm font-semibold" style={{ color: "var(--ink)" }}>
               {fmt(item.price)}
             </span>
-            {onQuickAdd && (
+            {onQuickAdd && !isUnavailable && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -82,9 +99,10 @@ export default function MenuItem({ item, onCustomize, onQuickAdd, isFavorite, on
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onToggleFavorite(item.id);
+                  if (!isUnavailable) onToggleFavorite(item.id);
                 }}
-                className="w-7 h-7 rounded-full flex items-center justify-center transition-transform hover:scale-110 active:scale-90"
+                disabled={isUnavailable}
+                className="w-7 h-7 rounded-full flex items-center justify-center transition-transform hover:scale-110 active:scale-90 disabled:opacity-40 disabled:cursor-not-allowed"
                 aria-label={isFavorite ? `Remove ${item.name} from favorites` : `Add ${item.name} to favorites`}
                 style={{ color: isFavorite ? "#e74c3c" : "var(--ink-soft)" }}
               >
@@ -94,11 +112,13 @@ export default function MenuItem({ item, onCustomize, onQuickAdd, isFavorite, on
               </button>
             )}
             <button
-              onClick={() => onCustomize(item)}
+              onClick={() => {
+                if (!isUnavailable) onCustomize(item);
+              }}
               id="add"
-              className="neumorphic-sm rounded-full w-9 h-9 flex items-center justify-center font-bold text-lg hover:scale-105 active:scale-90 transition-transform flex-shrink-0"
-              style={{ color: "var(--ink)" }}
-              aria-label={`Customize ${item.name}`}
+              disabled={isUnavailable}
+              className="btn-primary rounded-full w-9 h-9 flex items-center justify-center font-bold text-lg transition-transform active:scale-90 flex-shrink-0"
+              aria-label={isUnavailable ? `${item.name} is unavailable` : `Customize ${item.name}`}
             >
               +
             </button>

@@ -13,6 +13,8 @@ export default function CartPanel({
   orderCount,
   pickupTime,
   onPickupTimeChange,
+  taxRate,
+  isPlacing,
 }) {
   return (
     <aside className="hidden lg:block sticky top-24">
@@ -30,6 +32,8 @@ export default function CartPanel({
           orderCount={orderCount}
           pickupTime={pickupTime}
           onPickupTimeChange={onPickupTimeChange}
+          taxRate={taxRate}
+          isPlacing={isPlacing}
         />
       </div>
     </aside>

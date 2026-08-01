@@ -1,7 +1,15 @@
 import { useRef, useEffect } from "react";
 import gsap from "gsap";
+import AdminSearchInput from "./AdminSearchInput";
 
-export default function AdminTopbar({ adminName, onLogout }) {
+export default function AdminTopbar({
+  adminName,
+  onLogout,
+  searchQuery,
+  onSearchChange,
+  pendingCount = 0,
+  onGoToOrders,
+}) {
   const barRef = useRef(null);
 
   useEffect(() => {
@@ -48,49 +56,33 @@ export default function AdminTopbar({ adminName, onLogout }) {
         </p>
       </div>
 
-      {/* Right section: search + notifications + logout */}
+      {/* Right section: search + pending orders + logout */}
       <div className="flex items-center gap-3 flex-shrink-0">
-        {/* Search */}
-        <div className="relative hidden sm:block">
-          <svg
-            className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
-            style={{ color: "var(--ink-soft)" }}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
-            />
-          </svg>
-          <input
-            type="search"
-            className="neumorphic-inset rounded-full py-2 pl-9 pr-4 font-display text-xs w-44 lg:w-56 outline-none"
-            style={{ color: "var(--ink)", backgroundColor: "var(--bg-color)" }}
-            placeholder="Search orders, items..."
-            aria-label="Search admin"
-          />
+        {/* Search — filters orders & menu live (desktop) */}
+        <div className="hidden sm:block w-44 lg:w-56">
+          <AdminSearchInput value={searchQuery} onChange={onSearchChange} />
         </div>
 
-        {/* Notification bell */}
+        {/* Pending orders shortcut (real count, jumps to Orders) */}
         <button
+          onClick={onGoToOrders}
           className="relative w-9 h-9 rounded-full neumorphic-sm flex items-center justify-center active:scale-90 transition-all"
-          aria-label="Notifications"
+          aria-label={`${pendingCount} order${pendingCount === 1 ? "" : "s"} pending — go to orders`}
+          title="Pending orders"
           style={{ color: "var(--ink-soft)" }}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
           </svg>
-          <span
-            className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full text-[8px] font-mono-text font-bold flex items-center justify-center"
-            style={{ backgroundColor: "#e74c3c", color: "#fff" }}
-          >
-            3
-          </span>
+          {pendingCount > 0 && (
+            <span
+              className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full text-[9px] font-mono-text font-bold flex items-center justify-center"
+              style={{ backgroundColor: "#e74c3c", color: "#fff" }}
+              aria-hidden="true"
+            >
+              {pendingCount > 9 ? "9+" : pendingCount}
+            </span>
+          )}
         </button>
 
         {/* Admin avatar / logout */}

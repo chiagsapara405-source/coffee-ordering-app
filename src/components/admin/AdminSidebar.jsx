@@ -1,13 +1,6 @@
 import { useRef, useEffect } from "react";
 import gsap from "gsap";
-
-const NAV_ITEMS = [
-  { id: "dashboard", label: "Dashboard", icon: "D" },
-  { id: "inventory", label: "Inventory", icon: "I" },
-  { id: "orders", label: "Orders", icon: "O" },
-  { id: "analytics", label: "Analytics", icon: "A" },
-  { id: "settings", label: "Settings", icon: "S" },
-];
+import { NAV_ITEMS } from "./navItems";
 
 export default function AdminSidebar({ active, onNavigate, collapsed, onToggle }) {
   const sidebarRef = useRef(null);
@@ -58,7 +51,7 @@ export default function AdminSidebar({ active, onNavigate, collapsed, onToggle }
   return (
     <aside
       ref={sidebarRef}
-      className={`flex-shrink-0 flex flex-col min-h-0 self-stretch transition-all duration-300 ease-out ${
+      className={`hidden lg:flex flex-shrink-0 flex-col min-h-0 self-stretch transition-all duration-300 ease-out ${
         collapsed ? "w-[72px]" : "w-60"
       }`}
     >
@@ -113,8 +106,7 @@ export default function AdminSidebar({ active, onNavigate, collapsed, onToggle }
 
         <button
           onClick={onToggle}
-          className="mt-4 w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl neumorphic-sm text-sm font-display font-semibold active:scale-95 transition-all"
-          style={{ color: "var(--ink-soft)" }}
+          className="mt-4 w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl btn-outline text-sm font-display font-semibold"
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           <span className={`transition-transform duration-300 ${collapsed ? "rotate-180" : ""}`}>

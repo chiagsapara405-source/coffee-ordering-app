@@ -1,89 +1,34 @@
-export const USERS_KEY = "caffeine-users";
+
+
+import { api } from "../api/client.js";
+
+export const TOKEN_KEY = "caffeine-token";
 export const CURRENT_USER_KEY = "caffeine-current-user";
 
-const ADMIN_EMAIL = "admin@caffeine.com";
-const ADMIN_PASSWORD = "admin123";
-const ADMIN_NAME = "Admin";
-
-function getUsers() {
+export async function registerUser(name, email, password) {
   try {
-    const data = localStorage.getItem(USERS_KEY);
-    return data ? JSON.parse(data) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveUsers(users) {
-  try {
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-  } catch (err) {
-    console.warn("Failed to save users:", err);
-  }
-}
-
-function hashPassword(password) {
-  let hash = 0;
-  for (let i = 0; i < password.length; i++) {
-    const char = password.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash |= 0;
-  }
-  return "h" + Math.abs(hash).toString(16);
-}
-
-// Seed default admin account on module load
-(function seedAdmin() {
-  try {
-    const users = getUsers();
-    const exists = users.find((u) => u.email === ADMIN_EMAIL);
-    if (!exists) {
-      users.push({
-        id: "u-admin",
-        name: ADMIN_NAME,
-        email: ADMIN_EMAIL,
-        password: hashPassword(ADMIN_PASSWORD),
-        role: "admin",
-        createdAt: new Date().toISOString(),
-      });
-      saveUsers(users);
+    const data = await api.post("/api/auth/register", { name, email, password });
+    if (data.token) {
+      localStorage.setItem(TOKEN_KEY, data.token);
+      saveCurrentUser(data.user);
     }
-  } catch {
-    // Silently fail; non-critical
+    return { success: true, user: data.user };
+  } catch (error) {
+    return { success: false, error: error.message };
   }
-})();
-
-export function registerUser(name, email, password) {
-  const users = getUsers();
-  if (users.find((u) => u.email === email)) {
-    return { success: false, error: "Email already registered" };
-  }
-  if (password.length < 4) {
-    return { success: false, error: "Password must be at least 4 characters" };
-  }
-  const newUser = {
-    id: "u" + Date.now().toString(36),
-    name,
-    email,
-    password: hashPassword(password),
-    role: "customer",
-    createdAt: new Date().toISOString(),
-  };
-  users.push(newUser);
-  saveUsers(users);
-  return { success: true, user: newUser };
 }
 
-export function loginUser(email, password) {
-  const users = getUsers();
-  const hashed = hashPassword(password);
-  const found = users.find((u) => u.email === email && u.password === hashed);
-  if (!found) {
-    return { success: false, error: "Invalid email or password" };
+export async function loginUser(email, password) {
+  try {
+    const data = await api.post("/api/auth/login", { email, password });
+    if (data.token) {
+      localStorage.setItem(TOKEN_KEY, data.token);
+      saveCurrentUser(data.user);
+    }
+    return { success: true, user: data.user };
+  } catch (error) {
+    return { success: false, error: error.message };
   }
-  const safeUser = { ...found };
-  delete safeUser.password;
-  return { success: true, user: safeUser };
 }
 
 export function saveCurrentUser(user) {
@@ -92,6 +37,7 @@ export function saveCurrentUser(user) {
       localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
     } else {
       localStorage.removeItem(CURRENT_USER_KEY);
+      localStorage.removeItem(TOKEN_KEY);
     }
   } catch (err) {
     console.warn("Failed to save current user:", err);
@@ -115,3 +61,44 @@ export function isAdminUser() {
   const user = getCurrentUser();
   return user?.role === "admin";
 }
+
+/** Loyalty progress (0–9) derived from the server-authoritative user object */
+export function getStampsProgress(user) {
+  if (!user) return 0;
+  if (typeof user.stampsProgress === "number") return user.stampsProgress;
+  if (typeof user.stamps === "number") return user.stamps % 10;
+  return 0;
+}
+
+/** Re-sync current user from the server (refreshes role/stamps/favorites) */
+export async function refreshCurrentUser() {
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (!token) return null;
+  try {
+    const data = await api.get("/api/auth/me");
+    saveCurrentUser(data.user);
+    return data.user;
+  } catch {
+    // Token invalid/expired — the api client already cleared storage + redirected
+    return null;
+  }
+}
+
+/** Replace the user's favorites on the server (returns { success, favorites? }) */
+export async function updateFavorites(favorites) {
+  try {
+    const data = await api.put("/api/auth/me/favorites", { favorites });
+    return { success: true, favorites: data.favorites };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function fetchAdminStats() {
+  try {
+    return await api.get("/api/auth/admin/stats");
+  } catch {
+    return { totalUsers: 0, admins: 0 };
+  }
+}
+
