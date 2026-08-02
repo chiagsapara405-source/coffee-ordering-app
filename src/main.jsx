@@ -1,12 +1,15 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { injectSpeedInsights } from "@vercel/speed-insights";
 import "./index.css";
 import App from "./App.jsx";
 import LoginPage from "./pages/LoginPage";
 import LandingPage from "./pages/LandingPage";
 import AdminPage from "./pages/AdminPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+
+injectSpeedInsights();
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
